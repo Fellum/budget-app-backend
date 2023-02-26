@@ -1,0 +1,30 @@
+version: "3.9"
+services:
+  web:
+    build: .
+    depends_on:
+      - postgres
+    environment:
+      - PG_HOST=postgres
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=postgres
+      - PG_NAME=postgres
+
+  postgres:
+    image: postgres:15.2-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    expose:
+      - 5432
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/create_tables.sql
+volumes:
+  postgres:
+    driver: local
+
