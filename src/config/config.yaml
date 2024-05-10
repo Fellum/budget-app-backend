@@ -1,2 +1,5 @@
 http:
   port: 3000
+
+sqlite:
+  database: './mydb.sql'
