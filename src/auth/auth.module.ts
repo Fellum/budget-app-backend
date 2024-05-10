@@ -8,14 +8,22 @@ import { JwtStrategy } from './jwt.strategy';
 import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { AuthController } from './auth.controller';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule,
     UsersModule,
     PassportModule,
-    JwtModule.register({
-      secret: 'Some secret value',
-      signOptions: { expiresIn: '60s' },
+    JwtModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.getOrThrow('jwt.secret'),
+        signOptions: {
+          expiresIn: `${configService.getOrThrow('jwt.expirationSec')}s`,
+        },
+      }),
+      inject: [ConfigService],
     }),
   ],
   providers: [

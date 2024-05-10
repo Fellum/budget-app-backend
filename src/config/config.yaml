@@ -3,3 +3,7 @@ http:
 
 sqlite:
   database: './mydb.sql'
+
+jwt:
+  secret: 'Some secret'
+  expirationSec: 60
