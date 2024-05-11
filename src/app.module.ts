@@ -5,12 +5,28 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import configuration from './config/configuration';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
+import type { RedisClientOptions } from 'redis';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-redis-store';
+
 @Module({
   imports: [
     AuthModule,
     UsersModule,
     ConfigModule.forRoot({
+      isGlobal: true,
       load: [configuration],
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) =>
+        ({
+          store: redisStore,
+          host: configService.get('redis.host'),
+          port: configService.get('redis.port'),
+        }) as RedisClientOptions,
+      inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],

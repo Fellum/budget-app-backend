@@ -7,3 +7,7 @@ sqlite:
 jwt:
   secret: 'Some secret'
   expirationSec: 60
+
+redis:
+  host: 127.0.0.1
+  port: 6379
