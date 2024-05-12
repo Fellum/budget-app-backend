@@ -1,0 +1,37 @@
+services:
+  server:
+    build:
+      context: .
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3987:3987
+    depends_on:
+      - redis
+      - postgres
+    restart: on-failure
+  redis:
+    image: redis/redis-stack-server:latest
+    command: ["redis-server", "--appendonly yes", "--save 60 1000",  "--requirepass redisPassword"]
+    ports:
+      - 6379
+    volumes:
+      - budgetAppRedis:/data
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_DB=budget_app
+      - POSTGRES_USER=budget_app
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - TZ=UTC
+    ports:
+      - 5432
+    volumes:
+      - budgetAppPostgres:/var/lib/postgresql/data
+
+volumes:
+  budgetAppRedis:
+    external: true
+  budgetAppPostgres:
+    external: true
+

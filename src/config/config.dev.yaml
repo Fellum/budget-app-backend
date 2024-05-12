@@ -6,12 +6,12 @@ jwt:
   expirationSec: 60
 
 postgres:
-  host: postgres
+  host: 127.0.0.1
   port: 5432
   database: 'budget_app'
   username: 'budget_app'
-  synchronize: false
+  synchronize: true
 
 redis:
-  host: redis
+  host: 127.0.0.1
   port: 6379

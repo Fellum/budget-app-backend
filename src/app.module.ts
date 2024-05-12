@@ -20,21 +20,25 @@ import { redisStore } from 'cache-manager-redis-store';
     CacheModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
-      useFactory: (configService: ConfigService) =>
-        ({
-          store: redisStore,
-          host: configService.get('redis.host'),
-          port: configService.get('redis.port'),
-        }) as RedisClientOptions,
+      useFactory: async (configService: ConfigService) => {
+        const store = await redisStore({
+          url: `redis://${configService.get('redis.host')}:${configService.get('redis.port')}`,
+        });
+        return {
+          store,
+        } as RedisClientOptions;
+      },
       inject: [ConfigService],
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'sqlite',
-        database: configService.get<string>('sqlite.database', 'db.sql'),
-        entities: [],
-        synchronize: true,
+        type: 'postgres',
+        host: configService.get<string>('postgres.host'),
+        port: configService.get<number>('postgres.port'),
+        database: configService.get<string>('postgres.database'),
+        username: configService.get<string>('postgres.username'),
+        synchronize: configService.get<boolean>('postgres.synchronize'),
         autoLoadEntities: true,
       }),
       inject: [ConfigService],
